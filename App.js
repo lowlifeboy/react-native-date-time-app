@@ -21,6 +21,7 @@ class LoginScreen extends React.Component {
     enteredPassword: '',
     userLogined: false,
     isHidePasswordText: true,
+    wrongLoginOrPass: false,
   };
 
   componentDidMount() {
@@ -29,7 +30,7 @@ class LoginScreen extends React.Component {
           .then(value => {
             JSON.parse(value) === true &&
               AsyncStorage.getItem('enteredLogin').then(value => {
-                this.props.navigation.navigate('Details', JSON.parse(value));
+                this.props.navigation.navigate('Dashboard', JSON.parse(value));
               });
           })
           .done()
@@ -46,7 +47,7 @@ class LoginScreen extends React.Component {
   login = () => {
     this.state.adminLogin === this.state.enteredLogin &&
     this.state.adminPassword === this.state.enteredPassword
-      ? (this.props.navigation.navigate('Details', this.state.enteredLogin),
+      ? (this.props.navigation.navigate('Dashboard', this.state.enteredLogin),
         AsyncStorage.setItem('userLogined', JSON.stringify(true))
           .then(() => {
             this.setState({ userLogined: true });
@@ -57,7 +58,7 @@ class LoginScreen extends React.Component {
             this.setState({ enteredLogin: this.state.enteredLogin });
           })
           .done())
-      : console.log('Error');
+      : this.setState({ wrongLoginOrPass: true });
   };
 
   render() {
@@ -70,13 +71,14 @@ class LoginScreen extends React.Component {
       showHidePasswordButtonText,
       submitButton,
       submitButtonText,
+      error,
     } = styles;
 
     return (
       <View style={container}>
         <Text style={appName}>Date and Time</Text>
         <TextInput
-          style={input}
+          style={this.state.wrongLoginOrPass === false ? input : error}
           underlineColorAndroid="transparent"
           placeholder="Login"
           placeholderTextColor="black"
@@ -85,7 +87,7 @@ class LoginScreen extends React.Component {
         />
         <View style={passwordBlock}>
           <TextInput
-            style={input}
+            style={this.state.wrongLoginOrPass === false ? input : error}
             underlineColorAndroid="transparent"
             placeholder="Password"
             placeholderTextColor="black"
@@ -113,7 +115,7 @@ class LoginScreen extends React.Component {
   }
 }
 
-class DetailsScreen extends React.Component {
+class DashboardScreen extends React.Component {
   state = {
     headerTitle: `Hello, ${this.props.navigation.state.params}`,
     timePassed: false,
@@ -220,6 +222,16 @@ const styles = StyleSheet.create({
   submitButtonText: {
     color: 'white',
   },
+  error: {
+    borderColor: 'red',
+    color: 'red',
+
+    margin: 15,
+    height: 50,
+    borderWidth: 1,
+    borderRadius: 10,
+    paddingHorizontal: 20,
+  },
   dashboardContent: {
     height: 200,
     justifyContent: 'center',
@@ -234,7 +246,7 @@ const styles = StyleSheet.create({
 const AppNavigator = createStackNavigator(
   {
     Login: LoginScreen,
-    Details: DetailsScreen,
+    Dashboard: DashboardScreen,
   },
   {
     initialRouteName: 'Login',
