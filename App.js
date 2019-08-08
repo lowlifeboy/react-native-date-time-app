@@ -71,6 +71,7 @@ class LoginScreen extends React.Component {
       submitButton,
       submitButtonText,
     } = styles;
+
     return (
       <View style={container}>
         <Text style={appName}>Date and Time</Text>
@@ -149,13 +150,19 @@ class DetailsScreen extends React.Component {
     }, 1000);
   };
 
+  logout = () => {
+    AsyncStorage.removeItem('enteredLogin');
+    AsyncStorage.removeItem('userLogined');
+    this.props.navigation.goBack();
+  };
+
   render() {
     const { headerTitle } = this.state;
     const { dashboardContent, weekDay } = styles;
 
     return (
       <View>
-        <Header title={headerTitle} />
+        <Header title={headerTitle} onPressBack={() => this.logout()} />
         <View style={dashboardContent}>
           <Text style={weekDay}>{this.state.weekDay}</Text>
           <Text>{this.state.time}</Text>
